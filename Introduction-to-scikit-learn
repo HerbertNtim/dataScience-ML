@@ -1,0 +1,720 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "7df57706-b5ff-4321-b879-c88972d5c04e",
+   "metadata": {},
+   "source": [
+    "## Introduction To Scikit-Learn (SKLearn)\n",
+    "This notebook demonstrates some of the most useful functions of the beautiful scikit-learn library.\n",
+    "\n",
+    "What to cover:\n",
+    "0. An end-to-end scikit-learn workflow.\n",
+    "1. Getting the data ready.\n",
+    "2. Choosing the right estimator/algorithm for the problem.\n",
+    "3. Fit the model/algorithm and use it to make the right predictions on our data.\n",
+    "4. Evaluating a model\n",
+    "5. Improve a model\n",
+    "6. Save and Load the trained model\n",
+    "7. Putting all together."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ad1a5336-ef61-4ada-869b-1aec2f41bae6",
+   "metadata": {},
+   "source": [
+    "## 0. An end-to-end Scikit-Learn."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "0a5026b1-6ee9-4c6c-9c81-f4e6d7537612",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Importing libraries\n",
+    "import numpy as np\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "f608e61d-b3f6-4bc8-84f0-2f0848cf159f",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>age</th>\n",
+       "      <th>sex</th>\n",
+       "      <th>cp</th>\n",
+       "      <th>trestbps</th>\n",
+       "      <th>chol</th>\n",
+       "      <th>fbs</th>\n",
+       "      <th>restecg</th>\n",
+       "      <th>thalach</th>\n",
+       "      <th>exang</th>\n",
+       "      <th>oldpeak</th>\n",
+       "      <th>slope</th>\n",
+       "      <th>ca</th>\n",
+       "      <th>thal</th>\n",
+       "      <th>target</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>63</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3</td>\n",
+       "      <td>145</td>\n",
+       "      <td>233</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>150</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2.3</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>37</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>130</td>\n",
+       "      <td>250</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>187</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>41</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>130</td>\n",
+       "      <td>204</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>172</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.4</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>56</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>120</td>\n",
+       "      <td>236</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>178</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0.8</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>57</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>120</td>\n",
+       "      <td>354</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>163</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.6</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>298</th>\n",
+       "      <td>57</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>140</td>\n",
+       "      <td>241</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>123</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.2</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>299</th>\n",
+       "      <td>45</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3</td>\n",
+       "      <td>110</td>\n",
+       "      <td>264</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>132</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.2</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>300</th>\n",
+       "      <td>68</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>144</td>\n",
+       "      <td>193</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>141</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.4</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>301</th>\n",
+       "      <td>57</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>130</td>\n",
+       "      <td>131</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>115</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1.2</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>302</th>\n",
+       "      <td>57</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>130</td>\n",
+       "      <td>236</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>174</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>303 rows × 14 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     age  sex  cp  trestbps  chol  fbs  restecg  thalach  exang  oldpeak  \\\n",
+       "0     63    1   3       145   233    1        0      150      0      2.3   \n",
+       "1     37    1   2       130   250    0        1      187      0      3.5   \n",
+       "2     41    0   1       130   204    0        0      172      0      1.4   \n",
+       "3     56    1   1       120   236    0        1      178      0      0.8   \n",
+       "4     57    0   0       120   354    0        1      163      1      0.6   \n",
+       "..   ...  ...  ..       ...   ...  ...      ...      ...    ...      ...   \n",
+       "298   57    0   0       140   241    0        1      123      1      0.2   \n",
+       "299   45    1   3       110   264    0        1      132      0      1.2   \n",
+       "300   68    1   0       144   193    1        1      141      0      3.4   \n",
+       "301   57    1   0       130   131    0        1      115      1      1.2   \n",
+       "302   57    0   1       130   236    0        0      174      0      0.0   \n",
+       "\n",
+       "     slope  ca  thal  target  \n",
+       "0        0   0     1       1  \n",
+       "1        0   0     2       1  \n",
+       "2        2   0     2       1  \n",
+       "3        2   0     2       1  \n",
+       "4        2   0     2       1  \n",
+       "..     ...  ..   ...     ...  \n",
+       "298      1   0     3       0  \n",
+       "299      1   0     3       0  \n",
+       "300      1   2     3       0  \n",
+       "301      1   1     3       0  \n",
+       "302      1   1     2       0  \n",
+       "\n",
+       "[303 rows x 14 columns]"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Get the data ready\n",
+    "heart_disease = pd.read_csv('data/heart-disease.csv')\n",
+    "heart_disease"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "96908fd0-dc6e-4509-bb6c-df1d55d10b8f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create X (features matrix)\n",
+    "X = heart_disease.drop('target', axis=1)\n",
+    "\n",
+    "# Create y (labels)\n",
+    "y = heart_disease['target']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "d56092ca-14c0-4859-af44-645bd5305b8f",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'bootstrap': True,\n",
+       " 'ccp_alpha': 0.0,\n",
+       " 'class_weight': None,\n",
+       " 'criterion': 'gini',\n",
+       " 'max_depth': None,\n",
+       " 'max_features': 'sqrt',\n",
+       " 'max_leaf_nodes': None,\n",
+       " 'max_samples': None,\n",
+       " 'min_impurity_decrease': 0.0,\n",
+       " 'min_samples_leaf': 1,\n",
+       " 'min_samples_split': 2,\n",
+       " 'min_weight_fraction_leaf': 0.0,\n",
+       " 'monotonic_cst': None,\n",
+       " 'n_estimators': 100,\n",
+       " 'n_jobs': None,\n",
+       " 'oob_score': False,\n",
+       " 'random_state': None,\n",
+       " 'verbose': 0,\n",
+       " 'warm_start': False}"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Choose the right model and hyperparameters\n",
+    "from sklearn.ensemble import RandomForestClassifier\n",
+    "clf = RandomForestClassifier()\n",
+    "\n",
+    "# Keep the default hyperparameters\n",
+    "clf.get_params()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "d3350933-abea-46ac-b406-4d0240babc9a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 2. Fit the model to the training data.\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "b5f82c2c-77ef-4890-b9c7-182ec21e4386",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "clf.fit(X_train, y_train);"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "236f89de-0733-4e1c-83ea-bf5361642a17",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\mrman\\miniconda3\\Lib\\site-packages\\sklearn\\utils\\validation.py:2691: UserWarning: X does not have valid feature names, but RandomForestClassifier was fitted with feature names\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "ename": "ValueError",
+     "evalue": "Expected 2D array, got 1D array instead:\narray=[0. 1. 2. 3. 4.].\nReshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample.",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[31m---------------------------------------------------------------------------\u001b[39m",
+      "\u001b[31mValueError\u001b[39m                                Traceback (most recent call last)",
+      "\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[10]\u001b[39m\u001b[32m, line 2\u001b[39m\n\u001b[32m      1\u001b[39m \u001b[38;5;66;03m# Make a prediction\u001b[39;00m\n\u001b[32m----> \u001b[39m\u001b[32m2\u001b[39m y_label = \u001b[43mclf\u001b[49m\u001b[43m.\u001b[49m\u001b[43mpredict\u001b[49m\u001b[43m(\u001b[49m\u001b[43mnp\u001b[49m\u001b[43m.\u001b[49m\u001b[43marray\u001b[49m\u001b[43m(\u001b[49m\u001b[43m[\u001b[49m\u001b[32;43m0\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[32;43m1\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[32;43m2\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[32;43m3\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[32;43m4\u001b[39;49m\u001b[43m]\u001b[49m\u001b[43m)\u001b[49m\u001b[43m)\u001b[49m\n",
+      "\u001b[36mFile \u001b[39m\u001b[32m~\\miniconda3\\Lib\\site-packages\\sklearn\\ensemble\\_forest.py:903\u001b[39m, in \u001b[36mForestClassifier.predict\u001b[39m\u001b[34m(self, X)\u001b[39m\n\u001b[32m    882\u001b[39m \u001b[38;5;28;01mdef\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[34mpredict\u001b[39m(\u001b[38;5;28mself\u001b[39m, X):\n\u001b[32m    883\u001b[39m \u001b[38;5;250m    \u001b[39m\u001b[33;03m\"\"\"\u001b[39;00m\n\u001b[32m    884\u001b[39m \u001b[33;03m    Predict class for X.\u001b[39;00m\n\u001b[32m    885\u001b[39m \n\u001b[32m   (...)\u001b[39m\u001b[32m    901\u001b[39m \u001b[33;03m        The predicted classes.\u001b[39;00m\n\u001b[32m    902\u001b[39m \u001b[33;03m    \"\"\"\u001b[39;00m\n\u001b[32m--> \u001b[39m\u001b[32m903\u001b[39m     proba = \u001b[38;5;28;43mself\u001b[39;49m\u001b[43m.\u001b[49m\u001b[43mpredict_proba\u001b[49m\u001b[43m(\u001b[49m\u001b[43mX\u001b[49m\u001b[43m)\u001b[49m\n\u001b[32m    905\u001b[39m     \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28mself\u001b[39m.n_outputs_ == \u001b[32m1\u001b[39m:\n\u001b[32m    906\u001b[39m         \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m.classes_.take(np.argmax(proba, axis=\u001b[32m1\u001b[39m), axis=\u001b[32m0\u001b[39m)\n",
+      "\u001b[36mFile \u001b[39m\u001b[32m~\\miniconda3\\Lib\\site-packages\\sklearn\\ensemble\\_forest.py:945\u001b[39m, in \u001b[36mForestClassifier.predict_proba\u001b[39m\u001b[34m(self, X)\u001b[39m\n\u001b[32m    943\u001b[39m check_is_fitted(\u001b[38;5;28mself\u001b[39m)\n\u001b[32m    944\u001b[39m \u001b[38;5;66;03m# Check data\u001b[39;00m\n\u001b[32m--> \u001b[39m\u001b[32m945\u001b[39m X = \u001b[38;5;28;43mself\u001b[39;49m\u001b[43m.\u001b[49m\u001b[43m_validate_X_predict\u001b[49m\u001b[43m(\u001b[49m\u001b[43mX\u001b[49m\u001b[43m)\u001b[49m\n\u001b[32m    947\u001b[39m \u001b[38;5;66;03m# Assign chunk of trees to jobs\u001b[39;00m\n\u001b[32m    948\u001b[39m n_jobs, _, _ = _partition_estimators(\u001b[38;5;28mself\u001b[39m.n_estimators, \u001b[38;5;28mself\u001b[39m.n_jobs)\n",
+      "\u001b[36mFile \u001b[39m\u001b[32m~\\miniconda3\\Lib\\site-packages\\sklearn\\ensemble\\_forest.py:637\u001b[39m, in \u001b[36mBaseForest._validate_X_predict\u001b[39m\u001b[34m(self, X)\u001b[39m\n\u001b[32m    634\u001b[39m \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[32m    635\u001b[39m     ensure_all_finite = \u001b[38;5;28;01mTrue\u001b[39;00m\n\u001b[32m--> \u001b[39m\u001b[32m637\u001b[39m X = \u001b[43mvalidate_data\u001b[49m\u001b[43m(\u001b[49m\n\u001b[32m    638\u001b[39m \u001b[43m    \u001b[49m\u001b[38;5;28;43mself\u001b[39;49m\u001b[43m,\u001b[49m\n\u001b[32m    639\u001b[39m \u001b[43m    \u001b[49m\u001b[43mX\u001b[49m\u001b[43m,\u001b[49m\n\u001b[32m    640\u001b[39m \u001b[43m    \u001b[49m\u001b[43mdtype\u001b[49m\u001b[43m=\u001b[49m\u001b[43mDTYPE\u001b[49m\u001b[43m,\u001b[49m\n\u001b[32m    641\u001b[39m \u001b[43m    \u001b[49m\u001b[43maccept_sparse\u001b[49m\u001b[43m=\u001b[49m\u001b[33;43m\"\u001b[39;49m\u001b[33;43mcsr\u001b[39;49m\u001b[33;43m\"\u001b[39;49m\u001b[43m,\u001b[49m\n\u001b[32m    642\u001b[39m \u001b[43m    \u001b[49m\u001b[43mreset\u001b[49m\u001b[43m=\u001b[49m\u001b[38;5;28;43;01mFalse\u001b[39;49;00m\u001b[43m,\u001b[49m\n\u001b[32m    643\u001b[39m \u001b[43m    \u001b[49m\u001b[43mensure_all_finite\u001b[49m\u001b[43m=\u001b[49m\u001b[43mensure_all_finite\u001b[49m\u001b[43m,\u001b[49m\n\u001b[32m    644\u001b[39m \u001b[43m\u001b[49m\u001b[43m)\u001b[49m\n\u001b[32m    645\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m issparse(X) \u001b[38;5;129;01mand\u001b[39;00m (X.indices.dtype != np.intc \u001b[38;5;129;01mor\u001b[39;00m X.indptr.dtype != np.intc):\n\u001b[32m    646\u001b[39m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mValueError\u001b[39;00m(\u001b[33m\"\u001b[39m\u001b[33mNo support for np.int64 index based sparse matrices\u001b[39m\u001b[33m\"\u001b[39m)\n",
+      "\u001b[36mFile \u001b[39m\u001b[32m~\\miniconda3\\Lib\\site-packages\\sklearn\\utils\\validation.py:2902\u001b[39m, in \u001b[36mvalidate_data\u001b[39m\u001b[34m(_estimator, X, y, reset, validate_separately, skip_check_array, **check_params)\u001b[39m\n\u001b[32m   2900\u001b[39m         out = X, y\n\u001b[32m   2901\u001b[39m \u001b[38;5;28;01melif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m no_val_X \u001b[38;5;129;01mand\u001b[39;00m no_val_y:\n\u001b[32m-> \u001b[39m\u001b[32m2902\u001b[39m     out = \u001b[43mcheck_array\u001b[49m\u001b[43m(\u001b[49m\u001b[43mX\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43minput_name\u001b[49m\u001b[43m=\u001b[49m\u001b[33;43m\"\u001b[39;49m\u001b[33;43mX\u001b[39;49m\u001b[33;43m\"\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43m*\u001b[49m\u001b[43m*\u001b[49m\u001b[43mcheck_params\u001b[49m\u001b[43m)\u001b[49m\n\u001b[32m   2903\u001b[39m \u001b[38;5;28;01melif\u001b[39;00m no_val_X \u001b[38;5;129;01mand\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m no_val_y:\n\u001b[32m   2904\u001b[39m     out = _check_y(y, **check_params)\n",
+      "\u001b[36mFile \u001b[39m\u001b[32m~\\miniconda3\\Lib\\site-packages\\sklearn\\utils\\validation.py:1060\u001b[39m, in \u001b[36mcheck_array\u001b[39m\u001b[34m(array, accept_sparse, accept_large_sparse, dtype, order, copy, force_writeable, ensure_all_finite, ensure_non_negative, ensure_2d, allow_nd, ensure_min_samples, ensure_min_features, estimator, input_name)\u001b[39m\n\u001b[32m   1053\u001b[39m         \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[32m   1054\u001b[39m             msg = (\n\u001b[32m   1055\u001b[39m                 \u001b[33mf\u001b[39m\u001b[33m\"\u001b[39m\u001b[33mExpected 2D array, got 1D array instead:\u001b[39m\u001b[38;5;130;01m\\n\u001b[39;00m\u001b[33marray=\u001b[39m\u001b[38;5;132;01m{\u001b[39;00marray\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m.\u001b[39m\u001b[38;5;130;01m\\n\u001b[39;00m\u001b[33m\"\u001b[39m\n\u001b[32m   1056\u001b[39m                 \u001b[33m\"\u001b[39m\u001b[33mReshape your data either using array.reshape(-1, 1) if \u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m   1057\u001b[39m                 \u001b[33m\"\u001b[39m\u001b[33myour data has a single feature or array.reshape(1, -1) \u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m   1058\u001b[39m                 \u001b[33m\"\u001b[39m\u001b[33mif it contains a single sample.\u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m   1059\u001b[39m             )\n\u001b[32m-> \u001b[39m\u001b[32m1060\u001b[39m         \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mValueError\u001b[39;00m(msg)\n\u001b[32m   1062\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m dtype_numeric \u001b[38;5;129;01mand\u001b[39;00m \u001b[38;5;28mhasattr\u001b[39m(array.dtype, \u001b[33m\"\u001b[39m\u001b[33mkind\u001b[39m\u001b[33m\"\u001b[39m) \u001b[38;5;129;01mand\u001b[39;00m array.dtype.kind \u001b[38;5;129;01min\u001b[39;00m \u001b[33m\"\u001b[39m\u001b[33mUSV\u001b[39m\u001b[33m\"\u001b[39m:\n\u001b[32m   1063\u001b[39m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mValueError\u001b[39;00m(\n\u001b[32m   1064\u001b[39m         \u001b[33m\"\u001b[39m\u001b[33mdtype=\u001b[39m\u001b[33m'\u001b[39m\u001b[33mnumeric\u001b[39m\u001b[33m'\u001b[39m\u001b[33m is not compatible with arrays of bytes/strings.\u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m   1065\u001b[39m         \u001b[33m\"\u001b[39m\u001b[33mConvert your data to numeric values explicitly instead.\u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m   1066\u001b[39m     )\n",
+      "\u001b[31mValueError\u001b[39m: Expected 2D array, got 1D array instead:\narray=[0. 1. 2. 3. 4.].\nReshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample."
+     ]
+    }
+   ],
+   "source": [
+    "# Make a prediction\n",
+    "y_label = clf.predict(np.array([0, 1, 2, 3, 4]))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "bab814ad-4077-4331-913b-4ac7e5a91833",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0,\n",
+       "       0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0,\n",
+       "       0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0])"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "y_preds = clf.predict(X_test)\n",
+    "y_preds"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "c74d8cdc-48b2-4376-ac8a-f8a887b19e7b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "165    0\n",
+       "14     1\n",
+       "9      1\n",
+       "93     1\n",
+       "213    0\n",
+       "      ..\n",
+       "200    0\n",
+       "246    0\n",
+       "190    0\n",
+       "18     1\n",
+       "221    0\n",
+       "Name: target, Length: 61, dtype: int64"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "y_test"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "580e75c3-ef1f-4803-8a1b-f0600b459304",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "1.0"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# 3. Evaluate the Model\n",
+    "clf.score(X_train, y_train)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "678df96b-abdd-407b-85ba-a46713744da9",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.8524590163934426"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "clf.score(X_test, y_test)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "3addf544-5888-4171-bf91-eb32fbe61155",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "              precision    recall  f1-score   support\n",
+      "\n",
+      "           0       0.88      0.85      0.87        34\n",
+      "           1       0.82      0.85      0.84        27\n",
+      "\n",
+      "    accuracy                           0.85        61\n",
+      "   macro avg       0.85      0.85      0.85        61\n",
+      "weighted avg       0.85      0.85      0.85        61\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.metrics import classification_report, confusion_matrix, accuracy_score\n",
+    "\n",
+    "print(classification_report(y_test, y_preds))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "ce6a6520-1fa0-4e2e-86e0-bc00b252dd03",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[29,  5],\n",
+       "       [ 4, 23]])"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "confusion_matrix(y_test, y_preds)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "765ed483-6c2a-4840-8166-aa811c134bc0",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.8524590163934426"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "accuracy_score(y_test, y_preds)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "1dc6b67e-b6c8-432f-a981-270ed2c3d952",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Trying model with 10 estimators\n",
+      "Model accuracy on test set: 81.9672131147541%\n",
+      "\n",
+      "Trying model with 20 estimators\n",
+      "Model accuracy on test set: 90.1639344262295%\n",
+      "\n",
+      "Trying model with 30 estimators\n",
+      "Model accuracy on test set: 85.24590163934425%\n",
+      "\n",
+      "Trying model with 40 estimators\n",
+      "Model accuracy on test set: 85.24590163934425%\n",
+      "\n",
+      "Trying model with 50 estimators\n",
+      "Model accuracy on test set: 85.24590163934425%\n",
+      "\n",
+      "Trying model with 60 estimators\n",
+      "Model accuracy on test set: 86.88524590163934%\n",
+      "\n",
+      "Trying model with 70 estimators\n",
+      "Model accuracy on test set: 85.24590163934425%\n",
+      "\n",
+      "Trying model with 80 estimators\n",
+      "Model accuracy on test set: 88.52459016393442%\n",
+      "\n",
+      "Trying model with 90 estimators\n",
+      "Model accuracy on test set: 86.88524590163934%\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# 4. Improve a Model\n",
+    "# Try different amount of n_estimators\n",
+    "np.random.seed(42)\n",
+    "for i in range(10, 100, 10):\n",
+    "    print(f\"Trying model with {i} estimators\")\n",
+    "    clf = RandomForestClassifier(n_estimators=i).fit(X_train, y_train)\n",
+    "    print(f\"Model accuracy on test set: {clf.score(X_test, y_test) * 100}%\")\n",
+    "    print('')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "cbadb45a-39f8-4de1-a423-faec4da5daa2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 5. Save the model and load it \n",
+    "import pickle\n",
+    "pickle.dump(clf, open(\"random_forest_model_1.pkl\", \"wb\"))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "46bc66d2-259d-41da-ad39-ee1864ced3cb",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.8688524590163934"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "loaded_model = pickle.load(open('random_forest_model_1.pkl', 'rb'))\n",
+    "loaded_model.score(X_test, y_test)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3d913706-7738-43e0-88e7-328f8869b2d2",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
